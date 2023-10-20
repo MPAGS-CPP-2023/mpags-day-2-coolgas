@@ -12,12 +12,10 @@ Windows platforms with Visual Studio 2015 or better are also expected to
 work, but not tested.
 
 To build from a clone of this repository, open a terminal window
-and change directory into that holding this README. Then run:
+and change directory build. Then runs:
 ```
-$ ls
-LICENSE          README.md        mpags-cipher.cpp
-$ g++ -std=c++11 -Wall -Wextra -Werror -Wfatal-errors -pedantic -Wshadow -o mpags-cipher mpags-cipher.cpp
-$ ./mpags-cipher
+$ cmake ../src
+$ make
 ```
 
 If no input file is supplied, `mpags-cipher` will wait for user input
