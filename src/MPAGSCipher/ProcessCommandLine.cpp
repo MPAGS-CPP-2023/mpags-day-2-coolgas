@@ -6,9 +6,13 @@ int processCommandLine(
     const std::vector<std::string>& args,
     bool& helpRequested,
     bool& versionRequested,
+    bool& encrypt,
+    unsigned long& key,
+    size_t& cipherTrigger,
     std::string& inputFileName,
-    std::string& outputFileName )
-{   
+    std::string& outputFileName
+)
+{
     const std::size_t nCmdLineArgs{args.size()};
 
     // Process command line arguments - ignore zeroth element, as we know this
@@ -43,6 +47,24 @@ int processCommandLine(
                 // Got filename, so assign value and advance past it
                 outputFileName = args[i + 1];
                 ++i;
+            }
+        } else if (args[i].substr(0,2) == "-e") {
+            if (args[i].size() > 2) {
+                encrypt = true;
+                key = std::stoul(args[i].substr(2), nullptr, 10);
+                cipherTrigger += 1;
+            } else {
+                std::cerr << "[error] -e requires a key argument" << std::endl;
+                return 1;
+            }
+        } else if (args[i].substr(0,2) == "-d") {
+            if (args[i].size() > 2) {
+                encrypt = false;
+                key = std::stoul(args[i].substr(2), nullptr, 10);
+                cipherTrigger += 1;
+            } else {
+                std::cerr << "[error] -d requires a key argument" << std::endl;
+                return 1;
             }
         } else {
             // Have an unknown flag to output error message and return non-zero
