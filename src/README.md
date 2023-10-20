@@ -12,7 +12,7 @@ Windows platforms with Visual Studio 2015 or better are also expected to
 work, but not tested.
 
 To build from a clone of this repository, open a terminal window
-and change directory build. Then runs:
+and change to directory build. Then runs:
 ```
 $ cmake ../src
 $ make
