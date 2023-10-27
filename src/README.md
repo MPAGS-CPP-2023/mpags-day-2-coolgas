@@ -27,6 +27,13 @@ classical ciphers, it is transliterated using the following rules:
 - Digits are translated to their English equivalent words (e.g. '0' -> "ZERO")
 - All other characters (punctuation) are discarded
 
+To encrypt with Caesar cipher with certain `<KEY>`. After `mpags-cipher` is successfully
+built, open a terminal window in build directory. Then runs:
+```
+$ mpags-cipher -e <KEY>
+``` 
+Likewise, to decrypt with certain `<KEY>`, apply `-d <KEY>` flag.
+
 The results of this transliteration are output after CTRL-D.
 
 ## Source code layout

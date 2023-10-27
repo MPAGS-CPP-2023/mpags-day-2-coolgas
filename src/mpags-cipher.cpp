@@ -1,30 +1,12 @@
-#include <cctype>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-
+#include "RunCaesarCipher.hpp"
 #include "TransformChar.hpp"
 #include "ProcessCommandLine.hpp"
 
-std::string transformChar(const char in);
-
-int processCommandLine(
-    const std::vector<std::string>& args,
-    bool& helpRequested,
-    bool& versionRequested,
-    bool& encrpt,
-    unsigned long& key,
-    size_t& cipherTrigger, // this number detects whether -d or -e flag added
-    std::string& inputFileName,
-    std::string& outputFileName
-);
-
-std::string runCaesarCipher( 
-    const std::string& inputText, 
-    const size_t key,
-    const bool encrpt
-);
+#include <cctype>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <iostream>
 
 int main( int argc, char* argv[] )
 {
@@ -35,22 +17,21 @@ int main( int argc, char* argv[] )
     bool helpRequested{false};
     bool versionRequested{false};
     bool encrypt{false};
-    unsigned long key{0};
-    size_t cipherTrigger{0};
+    std::string key{""};
     std::string inputFile{""};
     std::string outputFile{""};
 
     // Process command line arguments - ignore zeroth element, as we know this
     // to be the program name and don't need to worry about it
-    const int processCmdFlag = processCommandLine(cmdLineArgs,
+    const bool processCmdFlag = processCommandLine(cmdLineArgs,
         helpRequested, versionRequested, encrypt,
-        key, cipherTrigger, inputFile, outputFile
+        key, inputFile, outputFile
     );
 
-    if (processCmdFlag == 1) {
+    if (processCmdFlag == false) {
         return 1;
     }
-
+    
     // Handle help, if requested
     if (helpRequested) {
         // Line splitting for readability
@@ -64,8 +45,8 @@ int main( int argc, char* argv[] )
             << "                   Stdin will be used if not supplied\n\n"
             << "  -o FILE          Write processed text to FILE\n"
             << "                   Stdout will be used if not supplied\n\n"
-            << "  -e<KEY>          Encrypt the message with KEY steps\n\n"
-            << "  -d<KEY>          Decrypt the message with KEY steps\n\n"
+            << "  -e <KEY>          Encrypt the message with KEY steps\n\n"
+            << "  -d <KEY>          Decrypt the message with KEY steps\n\n"
             << std::endl;
         // Help requires no further action, so return from main
         // with 0 used to indicate success
@@ -105,27 +86,20 @@ int main( int argc, char* argv[] )
         }
     }
 
+    // run the cipher here
+    outputText += runCaesarCipher(inputText, key, encrypt);
+
     // Warn that output file option not yet implemented
     if (!outputFile.empty()) {
         std::ofstream out_file {outputFile};
         bool ok_to_write = out_file.good();
         if (!ok_to_write) {
             std::cerr << "[error] failed to write to the output file" << std::endl;
-        }
-        // Run encrption/decryption if needed
-        if (cipherTrigger != 0) {
-            outputText += runCaesarCipher(inputText, key, encrypt);
-            out_file << outputText;
         } else {
-            out_file << inputText;
+            out_file << outputText;
         }
     } else {
-        if (cipherTrigger != 0) {
-            outputText += runCaesarCipher(inputText, key, encrypt);
-            std::cout << outputText << std::endl;
-        } else {
-            std::cout << inputText << std::endl;
-        }
+        std::cout << outputText << std::endl;
     }
     // No requirement to return from main, but we do so for clarity
     // and for consistency with other functions

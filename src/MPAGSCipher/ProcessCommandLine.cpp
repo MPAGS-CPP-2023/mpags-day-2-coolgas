@@ -1,19 +1,25 @@
+#include "ProcessCommandLine.hpp"
+
 #include <vector>
 #include <string>
 #include <iostream>
 
-int processCommandLine(
+bool processCommandLine(
     const std::vector<std::string>& args,
     bool& helpRequested,
     bool& versionRequested,
     bool& encrypt,
-    unsigned long& key,
-    size_t& cipherTrigger,
+    std::string& key,
     std::string& inputFileName,
     std::string& outputFileName
 )
 {
     const std::size_t nCmdLineArgs{args.size()};
+
+    // Return help text if no input given
+    if (nCmdLineArgs - 1 == 0) {
+        helpRequested = true;
+    }
 
     // Process command line arguments - ignore zeroth element, as we know this
     // to be the program name and don't need to worry about it
@@ -28,8 +34,8 @@ int processCommandLine(
             if (i == nCmdLineArgs - 1) {
                 std::cerr << "[error] -i requires a filename argument"
                           << std::endl;
-                // exit main with non-zero return to indicate failure
-                return 1;
+                // exit main with false to indicate failure
+                return false;
             } else {
                 // Got filename, so assign value and advance past it
                 inputFileName = args[i + 1];
@@ -41,38 +47,42 @@ int processCommandLine(
             if (i == nCmdLineArgs - 1) {
                 std::cerr << "[error] -o requires a filename argument"
                           << std::endl;
-                // exit main with non-zero return to indicate failure
-                return 1;
+                // exit main with false to indicate failure
+                return false;
             } else {
                 // Got filename, so assign value and advance past it
                 outputFileName = args[i + 1];
                 ++i;
             }
-        } else if (args[i].substr(0,2) == "-e") {
-            if (args[i].size() > 2) {
+        } else if (args[i] == "-e") {
+            if (i == nCmdLineArgs - 1) {
+                std::cerr << "[error] -e requires a filename argument"
+                          << std::endl;
+                // exit main with false to indicate failure
+                return false;
+            } else {
                 encrypt = true;
-                key = std::stoul(args[i].substr(2), nullptr, 10);
-                cipherTrigger += 1;
-            } else {
-                std::cerr << "[error] -e requires a key argument" << std::endl;
-                return 1;
+                key = args[i + 1];
+                ++i;
             }
-        } else if (args[i].substr(0,2) == "-d") {
-            if (args[i].size() > 2) {
-                encrypt = false;
-                key = std::stoul(args[i].substr(2), nullptr, 10);
-                cipherTrigger += 1;
+        } else if (args[i] == "-d") {
+            if (i == nCmdLineArgs - 1) {
+                std::cerr << "[error] -d requires a filename argument"
+                          << std::endl;
+                // exit main with false to indicate failure
+                return false;
             } else {
-                std::cerr << "[error] -d requires a key argument" << std::endl;
-                return 1;
+                encrypt = false;
+                key = args[i + 1];
+                ++i;
             }
         } else {
             // Have an unknown flag to output error message and return non-zero
             // exit status to indicate failure
             std::cerr << "[error] unknown argument '" << args[i]
                       << "'\n";
-            return 1;
+            return false;
         }
     }
-    return 0;
+    return true;
 }
