@@ -12,12 +12,10 @@ Windows platforms with Visual Studio 2015 or better are also expected to
 work, but not tested.
 
 To build from a clone of this repository, open a terminal window
-and change directory into that holding this README. Then run:
+and change to directory build. Then runs:
 ```
-$ ls
-LICENSE          README.md        mpags-cipher.cpp
-$ g++ -std=c++11 -Wall -Wextra -Werror -Wfatal-errors -pedantic -Wshadow -o mpags-cipher mpags-cipher.cpp
-$ ./mpags-cipher
+$ cmake ../src
+$ make
 ```
 
 If no input file is supplied, `mpags-cipher` will wait for user input
@@ -28,6 +26,13 @@ classical ciphers, it is transliterated using the following rules:
 - Alphabetical characters are converted to uppercase
 - Digits are translated to their English equivalent words (e.g. '0' -> "ZERO")
 - All other characters (punctuation) are discarded
+
+To encrypt with Caesar cipher with certain `<KEY>`. After `mpags-cipher` is successfully
+built, open a terminal window in build directory. Then runs:
+```
+$ mpags-cipher -e <KEY>
+``` 
+Likewise, to decrypt with certain `<KEY>`, apply `-d <KEY>` flag.
 
 The results of this transliteration are output after CTRL-D.
 
